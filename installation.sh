@@ -31,3 +31,80 @@ docker-compose up
 
 # docker compose file'i mysql için güncelliyoruz.
 # Step MYSQL
+
+# Backend containerine bağlanıyoruz
+docker-compose exec backend sh
+
+python manage.py startapp products
+
+# admin/admin/admin/settings.py 
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'products'
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+
+#BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = "admin"
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': BASE_DIR,
+        'USER': 'dbadmin',
+        'PASSWORD': 'Qazwsx123_',
+        'HOST': 'db',
+        'PORT': '3306',
+    }
+}
+
+
+# Models.py dosyasını products altında düzenledik.
+from django.db import models
+
+# Create your models here.
+
+class Product(models.Model):
+    title = models.CharField(max_length=200)
+    image = models.CharField(max_length=200)
+    likes = models.PositiveIntegerField(default=0)
+
+"""     description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='images/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name """
+class User(models.Model):
+    pass
+
+# Tekrar containere gidiyoruz ve migrate ediyoruz.
+
+docker-compose exec backend sh
+python manage.py makemigrations
+python manage.py migrate
+
