@@ -28,3 +28,6 @@ pipenv run pip freeze > admin/requirements.txt
 cd /Users/bulent/Documents/SoftwareProjects/microservices-example/admin/admin
 # Docker çalışıyor olmalı
 docker-compose up
+
+# docker compose file'i mysql için güncelliyoruz.
+# Step MYSQL
