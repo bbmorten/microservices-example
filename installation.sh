@@ -108,3 +108,85 @@ docker-compose exec backend sh
 python manage.py makemigrations
 python manage.py migrate
 
+# serializers.py dosyasını products altında düzenledik.
+# admin/admin/products/serializers.py
+
+from rest_framework import serializers
+from .models import Product
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        # fields = ('id', 'name', 'price', 'description', 'created_at', 'updated_at')
+        fields = '__all__'
+
+
+# admin/admin/products/views.py
+
+from rest_framework.response import Response
+from rest_framework import viewsets
+from rest_framework import status
+
+from .models import Product
+from .serializers import ProductSerializer
+
+class ProductViewSet(viewsets.ViewSet):
+    def list(self, request): # /api/products/
+        products = Product.objects.all()   
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data) 
+
+    def create(self, request): # /api/products/
+        serializer = ProductSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        
+    def retrieve(self, request, pk=None): # /api/products/<str:id>
+        product = Product.objects.get(id=pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None): # /api/products/<str:id>
+        product = Product.objects.get(id=pk)
+        serializer = ProductSerializer(instance=product, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        
+    def destroy(self, request, pk=None): # /api/products/<str:id>
+        product = Product.objects.get(id=pk)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        
+
+
+
+# admin/admin/products/urls.py
+from django.contrib import admin
+from django.urls import path
+from .views import ProductViewSet
+
+urlpatterns = [
+    path('products', ProductViewSet.as_view({'get': 'list', 'post': 'create'})),
+    path('products/<str:pk>', ProductViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+]
+
+
+# admin/admin/urls.py
+
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('products.urls')),
+
+]
+
+
+# Tested with postman Microservice collection on bbmorten
+
+

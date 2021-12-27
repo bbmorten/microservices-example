@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 # Mysql
-admin/admin/.dbdata
+admin/admin/.dbdata/*
+
